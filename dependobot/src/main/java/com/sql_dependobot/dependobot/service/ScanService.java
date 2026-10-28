@@ -34,9 +34,7 @@ public class ScanService {
         String repo = repoParts[1];
 
         String apiUrl = "https://api.github.com/repos/" + owner + "/" + repo + "/dependabot/alerts";
-        System.out.println("Token: " + githubToken); // confirm it's NOT null
         System.out.println("API URL: " + apiUrl);
-        System.out.println("Auth Header: Bearer " + githubToken.substring(0, 6) + "...");
 
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(githubToken);
