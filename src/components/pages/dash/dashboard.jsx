@@ -2,10 +2,9 @@ import React from 'react';
 import '../dash/dashboard.css'; // Link your unchanged CSS here
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
-import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
 import { doc, getDoc } from 'firebase/firestore';
 import { useState } from 'react';
+import { auth, db } from '../../../firebase';
 const Dashboard = () => {
     const navigateTo = (page) => {
         window.location.href = `${page}.html`;
@@ -16,10 +15,14 @@ const Dashboard = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        if (!auth || !db) {
+            setUserName('Guest');
+            setLoading(false);
+            return;
+        }
+
         const fetchUserName = async () => {
             try {
-                const auth = getAuth();
-                const db = getFirestore();
                 const user = auth.currentUser;
 
                 if (user) {

@@ -4,8 +4,6 @@ import { useNavigate } from "react-router-dom";
 import {updateDoc, arrayUnion } from "firebase/firestore";
 import { auth, db } from "../../../firebase";
 import { useEffect } from 'react';
-import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
 import { doc, getDoc } from 'firebase/firestore';
 import { useState } from 'react';
 function VulnScan() {
@@ -16,10 +14,13 @@ function VulnScan() {
   const [loading, setLoading] = useState(false); // Loading state
   const navigate = useNavigate();
   useEffect(() => {
+        if (!auth || !db) {
+            setUserName('Guest');
+            return;
+        }
+
         const fetchUserName = async () => {
             try {
-                const auth = getAuth();
-                const db = getFirestore();
                 const user = auth.currentUser;
 
                 if (user) {
@@ -76,7 +77,7 @@ function VulnScan() {
 
       setScanResult(result);
 
-      if (auth.currentUser) {
+      if (auth && db && auth.currentUser) {
         const userRef = doc(db, "user", auth.currentUser.uid);
         await updateDoc(userRef, {
           scans: arrayUnion(result),

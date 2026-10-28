@@ -33,6 +33,12 @@ const AuthPages = () => {
       return
     }
 
+    if (!auth || !db) {
+      setError("Firebase is not configured. Add the required values from .env.example.");
+      setIsLoading(false);
+      return;
+    }
+
     try {
       if (isLoginPage) {
         // Sign in
