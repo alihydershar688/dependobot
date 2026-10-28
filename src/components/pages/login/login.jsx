@@ -149,11 +149,6 @@ const AuthPages = () => {
             <div className="form-group">
               <div className="password-header">
                 <label htmlFor="password">Password</label>
-                {isLoginPage && (
-                  <a href="#" className="forgot-password">
-                    Forgot password?
-                  </a>
-                )}
               </div>
               <div className="input-wrapper">
                 <input

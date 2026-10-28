@@ -6,18 +6,12 @@ import { doc, getDoc } from 'firebase/firestore';
 import { useState } from 'react';
 import { auth, db } from '../../../firebase';
 const Dashboard = () => {
-    const navigateTo = (page) => {
-        window.location.href = `${page}.html`;
-    };
-    
     const navigate = useNavigate();
     const [userName, setUserName] = useState('');
-    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         if (!auth || !db) {
             setUserName('Guest');
-            setLoading(false);
             return;
         }
 

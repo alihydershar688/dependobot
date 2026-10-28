@@ -3,9 +3,6 @@ import "./landingpage.css";
 import { useNavigate } from "react-router-dom";
 const LandingPage = () => {
   const navigate = useNavigate();
-  const handleGitHubLogin = () => {
-    window.location.href = "http://localhost:8080/api/auth/github";
-};
 
   return (
     <div>

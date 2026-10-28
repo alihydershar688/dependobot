@@ -2,23 +2,34 @@ import React, { useState, useEffect } from "react";
 import "./history.css";
 import { useNavigate } from "react-router-dom";
 
+const API_BASE_URL =
+  process.env.REACT_APP_API_BASE_URL ||
+  (process.env.NODE_ENV === "development" ? "http://localhost:8081" : "");
+
 export default function ScanHistory() {
   const [alerts, setAlerts] = useState([]);
   const [expandedAlertId, setExpandedAlertId] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [filterStatus, setFilterStatus] = useState("all");
+  const [loadError, setLoadError] = useState("");
   const navigate = useNavigate();
   // Fetch alerts from the backend API
   useEffect(() => {
+    if (!API_BASE_URL) {
+      setLoadError("Alert history requires a deployed backend API.");
+      return;
+    }
+
     const fetchAlerts = async () => {
       try {
-        const response = await fetch(
-          "http://localhost:8081/api/dependabot-alerts"
-        );
+        const response = await fetch(`${API_BASE_URL}/api/dependabot-alerts`);
+        if (!response.ok) {
+          throw new Error(`Failed to fetch alerts: ${response.status}`);
+        }
         const data = await response.json();
-        setAlerts(data);
+        setAlerts(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error("Error fetching alerts:", error);
+        setLoadError("Could not load alerts from the backend API.");
       }
     };
 
@@ -31,10 +42,7 @@ export default function ScanHistory() {
       alert.severity.toLowerCase().includes(searchTerm.toLowerCase()) ||
       alert.state.toLowerCase().includes(searchTerm.toLowerCase());
 
-    const matchesStatus =
-      filterStatus === "all" || alert.state.toLowerCase() === filterStatus;
-
-    return matchesSearch && matchesStatus;
+    return matchesSearch;
   });
 
   const toggleExpand = (id) => {
@@ -87,7 +95,11 @@ export default function ScanHistory() {
         </div>
 
         <div className="scan-list-container">
-          {filteredAlerts.length === 0 ? (
+          {loadError ? (
+            <div className="no-results">
+              <p>{loadError}</p>
+            </div>
+          ) : filteredAlerts.length === 0 ? (
             <div className="no-results">
               <p>No alerts found matching your criteria</p>
             </div>

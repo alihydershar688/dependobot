@@ -6,6 +6,11 @@ import { auth, db } from "../../../firebase";
 import { useEffect } from 'react';
 import { doc, getDoc } from 'firebase/firestore';
 import { useState } from 'react';
+
+const API_BASE_URL =
+  process.env.REACT_APP_API_BASE_URL ||
+  (process.env.NODE_ENV === "development" ? "http://localhost:8081" : "");
+
 function VulnScan() {
   const [repoUrl, setRepoUrl] = useState("");
   const [scanResult, setScanResult] = useState(null);
@@ -54,10 +59,15 @@ function VulnScan() {
       return;
     }
 
+    if (!API_BASE_URL) {
+      alert("Scanning requires a deployed backend. Configure REACT_APP_API_BASE_URL.");
+      return;
+    }
+
     setLoading(true); // Start loading
 
     try {
-      const response = await fetch("http://localhost:8081/api/scan", {
+      const response = await fetch(`${API_BASE_URL}/api/scan`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ repoUrl: url }),
@@ -116,7 +126,7 @@ function VulnScan() {
         <h1>GitHub Repository Scanner</h1>
         <div className="actions">
           <button onClick={triggerQuickScan}>Quick Scan</button>
-          <a href="#">Logout</a>
+          <a href="/">Logout</a>
         </div>
       </header>
 
