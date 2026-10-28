@@ -1,5 +1,6 @@
 package com.sql_dependobot.dependobot.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -14,6 +15,10 @@ public class DependabotAlertEntity {
 
     @Column(name = "repo_url")
     private String repoUrl;
+
+    @Column(name = "user_id", nullable = false)
+    @JsonIgnore
+    private String userId;
 
     @Column(name = "state")
     private String state;

@@ -2,46 +2,68 @@ import React from 'react';
 import '../dash/dashboard.css'; // Link your unchanged CSS here
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
-import { doc, getDoc } from 'firebase/firestore';
 import { useState } from 'react';
-import { auth, db } from '../../../firebase';
+import { supabase } from '../../../supabase';
+import { apiFetch } from '../../../api';
 const Dashboard = () => {
     const navigate = useNavigate();
     const [userName, setUserName] = useState('');
+    const [alerts, setAlerts] = useState([]);
+    const [loadError, setLoadError] = useState('');
 
     useEffect(() => {
-        if (!auth || !db) {
-            setUserName('Guest');
-            return;
-        }
-
-        const fetchUserName = async () => {
+        let active = true;
+        const loadDashboard = async () => {
             try {
-                const user = auth.currentUser;
-
-                if (user) {
-                    const userDocRef = doc(db, 'user', user.uid);
-                    const userDocSnap = await getDoc(userDocRef);
-
-                    if (userDocSnap.exists()) {
-                        const userData = userDocSnap.data();
-                        setUserName(userData.name || 'User'); // Fallback if name not found
-                    } else {
-                        console.error('No such user document!');
-                        setUserName('User');
+                if (supabase) {
+                    const { data: { user }, error } = await supabase.auth.getUser();
+                    if (error) throw error;
+                    if (active) {
+                        setUserName(user?.user_metadata?.name || user?.email || 'Guest');
                     }
-                } else {
-                    console.error('No user is currently logged in');
-                    setUserName('Guest');
+                }
+
+                const response = await apiFetch('/api/dependabot-alerts');
+                const data = await response.json();
+                if (active) {
+                    setAlerts(Array.isArray(data) ? data : []);
                 }
             } catch (error) {
-                console.error('Error fetching user name:', error);
-                setUserName('User');
+                console.error('Could not load dashboard data.', error);
+                if (active) {
+                    setLoadError(error.message || 'Could not load dashboard data.');
+                }
             }
         };
 
-        fetchUserName();
+        loadDashboard();
+        return () => {
+            active = false;
+        };
     }, []);
+
+    const repositorySummary = Object.values(alerts.reduce((summary, alert) => {
+        const repository = alert.repoUrl || 'Unknown repository';
+        const severity = (alert.severity || '').toLowerCase();
+        if (!summary[repository]) {
+            summary[repository] = { repository, critical: 0, high: 0, medium: 0, low: 0 };
+        }
+        if (severity === 'critical') summary[repository].critical += 1;
+        if (severity === 'high') summary[repository].high += 1;
+        if (severity === 'moderate' || severity === 'medium') summary[repository].medium += 1;
+        if (severity === 'low') summary[repository].low += 1;
+        return summary;
+    }, {}));
+
+    const handleLogout = async () => {
+        const { error } = await supabase.auth.signOut();
+        if (error) {
+            console.error('Could not sign out.', error);
+            return;
+        }
+        navigate('/');
+    };
+
     return (
         <div className="container">
             {/* Sidebar */}
@@ -59,26 +81,28 @@ const Dashboard = () => {
             <div className="main-content">
                 {/* Header */}
                 <div className="header">
-                    <h2>Welcome back, ${userName}!</h2>
+                    <h2>Welcome back, {userName}!</h2>
                     <div>
                         <button className="quick-scan" onClick={() => navigate('/scanrepo')}>Quick Scan</button>
-                        <button className="login" onClick={() => navigate('/')}>Login</button>
+                        <button className="login" onClick={handleLogout}>Logout</button>
                     </div>
                 </div>
+
+                {loadError && <p role="alert">{loadError}</p>}
 
                 {/* Stats */}
                 <div className="stats">
                     <div className="stat">
                         <h3>Total Repositories</h3>
-                        <p>15</p>
+                        <p>{repositorySummary.length}</p>
                     </div>
                     <div className="stat">
                         <h3>Total Vulnerabilities</h3>
-                        <p>42</p>
+                        <p>{alerts.length}</p>
                     </div>
                     <div className="stat">
                         <h3>Critical Issues</h3>
-                        <p>4</p>
+                        <p>{alerts.filter((alert) => alert.severity?.toLowerCase() === 'critical').length}</p>
                     </div>
                 </div>
 
@@ -97,27 +121,18 @@ const Dashboard = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>repo1</td>
-                                    <td className="bg-red">5</td>
-                                    <td className="bg-orange">3</td>
-                                    <td className="bg-yellow">2</td>
-                                    <td className="bg-green">1</td>
-                                </tr>
-                                <tr>
-                                    <td>repo2</td>
-                                    <td className="bg-red">4</td>
-                                    <td className="bg-orange">2</td>
-                                    <td className="bg-yellow">3</td>
-                                    <td className="bg-green">2</td>
-                                </tr>
-                                <tr>
-                                    <td>repo3</td>
-                                    <td className="bg-red">3</td>
-                                    <td className="bg-orange">4</td>
-                                    <td className="bg-yellow">1</td>
-                                    <td className="bg-green">3</td>
-                                </tr>
+                                {repositorySummary.map((summary) => (
+                                    <tr key={summary.repository}>
+                                        <td>{summary.repository}</td>
+                                        <td className="bg-red">{summary.critical}</td>
+                                        <td className="bg-orange">{summary.high}</td>
+                                        <td className="bg-yellow">{summary.medium}</td>
+                                        <td className="bg-green">{summary.low}</td>
+                                    </tr>
+                                ))}
+                                {repositorySummary.length === 0 && (
+                                    <tr><td colSpan="5">No scan results yet.</td></tr>
+                                )}
                             </tbody>
                         </table>
                     </div>
@@ -125,47 +140,28 @@ const Dashboard = () => {
 
                 {/* Recent Scans */}
                 <div className="recent-scans">
-                    <h3>Recent Scans</h3>
+                    <h3>Recent Vulnerability Alerts</h3>
                     <table>
                         <thead>
                             <tr>
                                 <th>Repository</th>
-                                <th>Date</th>
-                                <th>Vulnerabilities</th>
-                                <th>Critical</th>
-                                <th>High</th>
-                                <th>Medium</th>
-                                <th>Low</th>
+                                <th>Package</th>
+                                <th>Severity</th>
+                                <th>Status</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>repo1</td>
-                                <td>2023-09-01</td>
-                                <td>10</td>
-                                <td>5</td>
-                                <td>3</td>
-                                <td>2</td>
-                                <td>1</td>
-                            </tr>
-                            <tr>
-                                <td>repo2</td>
-                                <td>2023-09-02</td>
-                                <td>11</td>
-                                <td>4</td>
-                                <td>2</td>
-                                <td>3</td>
-                                <td>2</td>
-                            </tr>
-                            <tr>
-                                <td>repo3</td>
-                                <td>2023-09-03</td>
-                                <td>12</td>
-                                <td>3</td>
-                                <td>4</td>
-                                <td>1</td>
-                                <td>3</td>
-                            </tr>
+                            {alerts.slice(0, 5).map((alert) => (
+                                <tr key={alert.id}>
+                                    <td>{alert.repoUrl}</td>
+                                    <td>{alert.packageName || 'Unknown package'}</td>
+                                    <td>{alert.severity || 'Unknown'}</td>
+                                    <td>{alert.state || 'Unknown'}</td>
+                                </tr>
+                            ))}
+                            {alerts.length === 0 && (
+                                <tr><td colSpan="4">No vulnerability alerts yet.</td></tr>
+                            )}
                         </tbody>
                     </table>
                 </div>

@@ -2,28 +2,22 @@
 import "../login/login.css"
 import { useNavigate } from "react-router-dom";
 import { useState } from "react"
-import { auth, db } from "../../../firebase"
-import { doc, setDoc } from "firebase/firestore"
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile } from "firebase/auth"
+import { supabase } from "../../../supabase"
 
 const getAuthErrorMessage = (error) => {
   switch (error.code) {
-    case "auth/email-already-in-use":
+    case "user_already_exists":
       return "An account already exists for this email. Try signing in instead."
-    case "auth/invalid-email":
+    case "invalid_email":
       return "Enter a valid email address."
-    case "auth/invalid-credential":
-    case "auth/user-not-found":
-    case "auth/wrong-password":
+    case "invalid_credentials":
       return "The email or password is incorrect."
-    case "auth/operation-not-allowed":
-      return "Email/password sign-in is disabled. Enable it in Firebase Authentication settings."
-    case "auth/weak-password":
+    case "email_not_confirmed":
+      return "Confirm your email using the link we sent you, then sign in."
+    case "weak_password":
       return "Choose a stronger password."
-    case "auth/too-many-requests":
-      return "Too many attempts. Wait a little while, then try again."
-    case "auth/network-request-failed":
-      return "Could not reach Firebase. Check your internet connection and Firebase settings."
+    case "over_email_send_rate_limit":
+      return "Too many email requests. Wait a while, then try again."
     default:
       return error.message || "Authentication failed. Please try again."
   }
@@ -57,39 +51,34 @@ const AuthPages = () => {
       return
     }
 
-    if (!auth) {
-      setError("Authentication is not configured. Add the Firebase web app settings in Vercel, then enable Email/Password sign-in in Firebase Authentication.");
+    if (!supabase) {
+      setError("Authentication is not configured. Add the Supabase URL and publishable key to the frontend environment.");
       setIsLoading(false);
       return;
     }
 
     try {
       if (isLoginPage) {
-        // Sign in
-        await signInWithEmailAndPassword(auth, email, password)
+        const { error: signInError } = await supabase.auth.signInWithPassword({
+          email: email.trim(),
+          password,
+        });
+        if (signInError) throw signInError;
         setSuccess("Login successful! Redirecting to dashboard...")
-        navigate("/landing") // 👈 Redirect here
+        navigate("/landing")
       } else {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password)
-        const user = userCredential.user
-        let profileSaved = Boolean(db)
+        const { data, error: signUpError } = await supabase.auth.signUp({
+          email: email.trim(),
+          password,
+          options: {
+            data: { name: name.trim() },
+            emailRedirectTo: window.location.origin,
+          },
+        });
+        if (signUpError) throw signUpError;
 
-        try {
-          await updateProfile(user, { displayName: name.trim() })
-          if (db) {
-            await setDoc(doc(db, "user", user.uid), {
-              name: name.trim(),
-              email,
-              createdAt: new Date().toISOString(),
-            })
-          }
-        } catch (profileError) {
-          console.error("Firebase account created but profile could not be saved.", profileError)
-          profileSaved = false
-        }
-
-        if (!profileSaved) {
-          setError("Your account was created, but profile storage could not be saved. You can still sign in; profile-based features may be unavailable.")
+        if (!data.session) {
+          setSuccess("Account created. Check your email to confirm it, then sign in.")
           return
         }
 

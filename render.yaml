@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: dependobot-api
+    runtime: docker
+    plan: free
+    dockerfilePath: ./dependobot/Dockerfile
+    dockerContext: ./dependobot
+    healthCheckPath: /api/health
+    envVars:
+      - key: SUPABASE_JDBC_URL
+        sync: false
+      - key: SUPABASE_DB_USERNAME
+        sync: false
+      - key: SUPABASE_DB_PASSWORD
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: GITHUB_TOKEN
+        sync: false
+      - key: CORS_ALLOWED_ORIGINS
+        value: http://localhost:3000,https://dependencyvulnaribilites.vercel.app

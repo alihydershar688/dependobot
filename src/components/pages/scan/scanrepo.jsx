@@ -1,15 +1,10 @@
 
 import "../scan/scanrepo.css";
 import { useNavigate } from "react-router-dom";
-import {updateDoc, arrayUnion } from "firebase/firestore";
-import { auth, db } from "../../../firebase";
 import { useEffect } from 'react';
-import { doc, getDoc } from 'firebase/firestore';
 import { useState } from 'react';
-
-const API_BASE_URL =
-  process.env.REACT_APP_API_BASE_URL ||
-  (process.env.NODE_ENV === "development" ? "http://localhost:8081" : "");
+import { supabase } from "../../../supabase";
+import { apiFetch } from "../../../api";
 
 function VulnScan() {
   const [repoUrl, setRepoUrl] = useState("");
@@ -19,33 +14,19 @@ function VulnScan() {
   const [loading, setLoading] = useState(false); // Loading state
   const navigate = useNavigate();
   useEffect(() => {
-        if (!auth || !db) {
+        if (!supabase) {
             setUserName('Guest');
             return;
         }
 
         const fetchUserName = async () => {
             try {
-                const user = auth.currentUser;
-
-                if (user) {
-                    const userDocRef = doc(db, 'user', user.uid);
-                    const userDocSnap = await getDoc(userDocRef);
-
-                    if (userDocSnap.exists()) {
-                        const userData = userDocSnap.data();
-                        setUserName(userData.name || 'User'); // Fallback if name not found
-                    } else {
-                        console.error('No such user document!');
-                        setUserName('User');
-                    }
-                } else {
-                    console.error('No user is currently logged in');
-                    setUserName('Guest');
-                }
+                const { data: { user }, error } = await supabase.auth.getUser();
+                if (error) throw error;
+                setUserName(user?.user_metadata?.name || user?.email || 'Guest');
             } catch (error) {
                 console.error('Error fetching user name:', error);
-                setUserName('User');
+                setUserName('Guest');
             }
         };
 
@@ -59,21 +40,14 @@ function VulnScan() {
       return;
     }
 
-    if (!API_BASE_URL) {
-      alert("Scanning requires a deployed backend. Configure REACT_APP_API_BASE_URL.");
-      return;
-    }
-
     setLoading(true); // Start loading
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/scan`, {
+      const response = await apiFetch("/api/scan", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ repoUrl: url }),
       });
-
-      if (!response.ok) throw new Error("Scan failed");
 
       const vulnerabilities = await response.json();
 
@@ -86,18 +60,9 @@ function VulnScan() {
       };
 
       setScanResult(result);
-
-      if (auth && db && auth.currentUser) {
-        const userRef = doc(db, "user", auth.currentUser.uid);
-        await updateDoc(userRef, {
-          scans: arrayUnion(result),
-        });
-      } else {
-        console.warn("User not logged in. Skipping Firebase write.");
-      }
     } catch (error) {
       console.error("Error scanning repository:", error);
-      alert("Scan failed. Please try again.");
+      alert(error.message || "Scan failed. Please try again.");
     } finally {
       setLoading(false); // Stop loading
     }
@@ -105,6 +70,16 @@ function VulnScan() {
 
   const triggerQuickScan = () => {
     alert("Quick Scan initiated!");
+  };
+
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.error("Could not sign out.", error);
+      alert("Could not sign out. Please try again.");
+      return;
+    }
+    navigate("/");
   };
 
   const getSeverityColor = (severity) => {
@@ -126,7 +101,7 @@ function VulnScan() {
         <h1>GitHub Repository Scanner</h1>
         <div className="actions">
           <button onClick={triggerQuickScan}>Quick Scan</button>
-          <a href="/">Logout</a>
+          <button onClick={handleLogout}>Logout</button>
         </div>
       </header>
 

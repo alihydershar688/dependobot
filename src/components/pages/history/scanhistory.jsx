@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./history.css";
 import { useNavigate } from "react-router-dom";
-
-const API_BASE_URL =
-  process.env.REACT_APP_API_BASE_URL ||
-  (process.env.NODE_ENV === "development" ? "http://localhost:8081" : "");
+import { apiFetch } from "../../../api";
 
 export default function ScanHistory() {
   const [alerts, setAlerts] = useState([]);
@@ -14,17 +11,9 @@ export default function ScanHistory() {
   const navigate = useNavigate();
   // Fetch alerts from the backend API
   useEffect(() => {
-    if (!API_BASE_URL) {
-      setLoadError("Alert history requires a deployed backend API.");
-      return;
-    }
-
     const fetchAlerts = async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/api/dependabot-alerts`);
-        if (!response.ok) {
-          throw new Error(`Failed to fetch alerts: ${response.status}`);
-        }
+        const response = await apiFetch("/api/dependabot-alerts");
         const data = await response.json();
         setAlerts(Array.isArray(data) ? data : []);
       } catch (error) {
@@ -38,9 +27,9 @@ export default function ScanHistory() {
 
   const filteredAlerts = alerts.filter((alert) => {
     const matchesSearch =
-      alert.repoUrl.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      alert.severity.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      alert.state.toLowerCase().includes(searchTerm.toLowerCase());
+      (alert.repoUrl || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (alert.severity || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (alert.state || "").toLowerCase().includes(searchTerm.toLowerCase());
 
     return matchesSearch;
   });
@@ -52,14 +41,14 @@ export default function ScanHistory() {
  
 
   const renderVulnerabilitySummary = (alert) => {
-    if (!alert.securityAdvisory) return null;
+    if (!alert.description) return null;
 
     const severityClass =
       alert.severity === "critical" ? "severity-critical" : "severity-safe";
 
     return (
       <div className={`vulnerability-summary ${severityClass}`}>
-        <span>{alert.securityAdvisory.description}</span>
+        <span>{alert.description}</span>
       </div>
     );
   };
