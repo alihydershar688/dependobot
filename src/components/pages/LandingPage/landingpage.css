@@ -1,0 +1,132 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f9fafb;
+    color: #333;
+    margin: 0;
+    padding: 0;
+  }
+  
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  header .logo {
+    font-size: 24px;
+    font-weight: bold;
+  }
+  
+  header .login {
+    font-size: 16px;
+  }
+  
+  main {
+    text-align: center;
+    padding: 40px 20px;
+  }
+  
+  main h1 {
+    font-size: 36px;
+    font-weight: bold;
+  }
+  
+  main p {
+    color: #666;
+    margin-top: 10px;
+  }
+  
+  .buttons {
+    margin-top: 20px;
+  }
+  
+  .buttons button {
+    background-color: #000;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    margin: 0 10px;
+    cursor: pointer;
+  }
+  
+  .buttons button.secondary {
+    background-color: #e5e7eb;
+    color: #000;
+  }
+  
+  .features {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 40px;
+  }
+  
+  .feature {
+    background-color: #fff;
+    padding: 20px;
+    margin: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 300px;
+  }
+  
+  .feature h2 {
+    font-size: 20px;
+    font-weight: bold;
+  }
+  
+  .feature p {
+    color: #666;
+    margin-top: 10px;
+  }
+  
+  .demo {
+    margin-top: 40px;
+  }
+  
+  .demo h2 {
+    font-size: 28px;
+    font-weight: bold;
+  }
+  
+  .demo .placeholder {
+    background-color: #e5e7eb;
+    padding: 60px;
+    margin-top: 20px;
+    border-radius: 5px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .github-button {
+    margin-top: 40px;
+  }
+  
+  .github-button button {
+    background-color: #fff;
+    border: 1px solid #d1d5db;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .github-button button i {
+    margin-right: 10px;
+  }
+  
+  footer {
+    margin-top: 40px;
+    padding: 20px;
+    text-align: center;
+    color: #666;
+  }
+  

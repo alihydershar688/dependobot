@@ -1,0 +1,582 @@
+/* Base styles with enhanced colors */
+body {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  background-color: #f0f4f8;
+  margin: 0;
+  padding: 0;
+  color: #1e293b;
+  line-height: 1.5;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f0f4f8 0%, #e6f0ff 100%);
+}
+
+/* Header styling with gradient */
+header {
+  background: linear-gradient(90deg, #1a365d 0%, #2a4365 100%);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+header h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+header .actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+header .actions button {
+  background: linear-gradient(90deg, #3182ce 0%, #4299e1 100%);
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+header .actions button:hover {
+  background: linear-gradient(90deg, #2c5282 0%, #3182ce 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+header .actions a {
+  color: #e2e8f0;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+header .actions a:hover {
+  color: white;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+}
+
+/* Main content layout */
+.main {
+  display: flex;
+  flex: 1;
+}
+
+/* Sidebar styling with accent color */
+.sidebar {
+  position: fixed;
+  top: 70px;
+  left: 0;
+  width: 180px; /* Slightly wider for breathing space */
+  height: 100vh;
+  background-color: #ffffff; /* Pure white for cleanliness */
+  box-shadow: 3px 0 8px rgba(0, 0, 0, 0.15); /* Slightly stronger, softer shadow */
+  padding: 24px 16px;
+  z-index: 1000;
+  border-top-right-radius: 16px; /* Modern rounding */
+  border-bottom-right-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Space for footer if needed */
+}
+
+.sidebar nav {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sidebar nav button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  color: #1a237e; /* Dark Navy */
+  background: none;
+  border: none;
+  border-radius: 12px;
+  text-align: left;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.3s, color 0.3s, transform 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.sidebar nav button:before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 4px;
+  background: linear-gradient(180deg, #1a237e 0%, #3949ab 100%); /* Deeper navy gradient */
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.sidebar nav button:hover {
+  background-color: #e3f2fd; /* Soft blue background */
+  color: #0d47a1;
+  transform: translateX(2px); /* Tiny nudge for interaction feel */
+}
+
+.sidebar nav button:hover:before {
+  opacity: 1;
+}
+
+.sidebar nav button.active {
+  background-color: #bbdefb; /* Light navy highlight */
+  color: #0d47a1;
+  font-weight: 600;
+}
+
+.sidebar nav button.active:before {
+  opacity: 1;
+}
+
+/* Optional: Add subtle divider lines between sections */
+.sidebar .divider {
+  margin: 20px 0;
+  height: 1px;
+  background-color: #e0e0e0;
+}
+
+/* Main content area with enhanced spacing */
+.content {
+  margin-left: 250px; /* Same as sidebar width */
+  padding: 20px;
+  width: calc(100% - 250px); /* Remaining width */
+  min-height: 100vh;
+  background-color: #f7f9fc; /* Light background for contrast */
+  overflow-x: hidden; 
+}
+
+.content h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-top: 0;
+  margin-bottom: 24px;
+  color: #1a365d;
+  position: relative;
+  padding-bottom: 12px;
+}
+
+.content h1:after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 60px;
+  height: 4px;
+  background: linear-gradient(90deg, #3182ce 0%, #4299e1 100%);
+  border-radius: 2px;
+}
+
+/* Scan box styling with enhanced visuals */
+.scan-box {
+  background-color: white;
+  padding: 28px;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  margin-bottom: 32px;
+  border: 1px solid #e2e8f0;
+  position: relative;
+  overflow: hidden;
+}
+
+.scan-box:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, #3182ce 0%, #4299e1 100%);
+}
+
+.scan-box h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #1a365d;
+}
+
+.scan-box div {
+  display: flex;
+}
+
+.scan-box input {
+  flex: 1;
+  padding: 14px 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px 0 0 8px;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.scan-box input:focus {
+  outline: none;
+  border-color: #4299e1;
+  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15), inset 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.scan-box input::placeholder {
+  color: #a0aec0;
+}
+
+.scan-box button {
+  background: linear-gradient(90deg, #3182ce 0%, #4299e1 100%);
+  color: white;
+  padding: 14px 24px;
+  border: none;
+  border-radius: 8px 8px 8px 8px;
+  margin-top: 50px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 20px;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.scan-box button:hover {
+  background: linear-gradient(90deg, #2c5282 0%, #3182ce 100%);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Result box styling with enhanced visuals */
+.result-box {
+  background-color: white;
+  padding: 28px;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e2e8f0;
+  position: relative;
+  overflow: hidden;
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.result-box:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, #3182ce 0%, #4299e1 100%);
+}
+
+.result-box h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #1a365d;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.result-box p {
+  margin: 16px 0;
+  padding: 8px 12px;
+  background-color: #f8fafc;
+  border-radius: 6px;
+  border-left: 3px solid #4299e1;
+}
+
+.result-box strong {
+  font-weight: 600;
+  color: #1a365d;
+}
+
+/* Vulnerability table styling with enhanced visuals and severity colors */
+.vuln-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-top: 16px;
+  margin-bottom: 24px;
+  font-size: 0.9rem;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e2e8f0;
+}
+
+.vuln-table th,
+.vuln-table td {
+  padding: 14px 16px;
+  text-align: left;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.vuln-table th {
+  background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+  font-weight: 600;
+  color: #1a365d;
+  position: sticky;
+  top: 0;
+}
+
+.vuln-table tr:last-child td {
+  border-bottom: none;
+}
+
+.vuln-table tr:hover {
+  background-color: #f8fafc;
+}
+
+/* Severity-based styling with enhanced colors */
+.vuln-table td:nth-child(3) {
+  font-weight: 600;
+  position: relative;
+}
+
+/* Severity badges with enhanced styling */
+.vuln-table td:nth-child(3)::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+/* High severity - Red */ 
+.vuln-table tr:has(td:nth-child(3):contains("high")) {
+  background-color: rgba(254, 226, 226, 0.3);
+}
+
+.vuln-table tr:has(td:nth-child(3):contains("high")) td:nth-child(3) {
+  color: #dc2626;
+}
+
+.vuln-table tr:has(td:nth-child(3):contains("high")) td:nth-child(3)::before {
+  background-color: #dc2626;
+  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.2);
+}
+
+/* Medium severity - Orange */
+.vuln-table tr:has(td:nth-child(3):contains("medium")) {
+  background-color: rgba(255, 237, 213, 0.3);
+}
+
+.vuln-table tr:has(td:nth-child(3):contains("medium")) td:nth-child(3) {
+  color: #ea580c;
+}
+
+.vuln-table tr:has(td:nth-child(3):contains("medium")) td:nth-child(3)::before {
+  background-color: #ea580c;
+  box-shadow: 0 0 0 2px rgba(234, 88, 12, 0.2);
+}
+
+/* Low severity - Blue */
+.vuln-table tr:has(td:nth-child(3):contains("low")) {
+  background-color: rgba(219, 234, 254, 0.3);
+}
+
+.vuln-table tr:has(td:nth-child(3):contains("low")) td:nth-child(3) {
+  color: #2563eb;
+}
+
+.vuln-table tr:has(td:nth-child(3):contains("low")) td:nth-child(3)::before {
+  background-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+/* Since :has() selector might not work in all browsers, adding explicit classes as fallback */
+.severity-high {
+  color: #dc2626 !important;
+  background-color: rgba(254, 226, 226, 0.3) !important;
+}
+
+.severity-medium {
+  color: #ea580c !important;
+  background-color: rgba(255, 237, 213, 0.3) !important;
+}
+
+.severity-low {
+  color: #2563eb !important;
+  background-color: rgba(219, 234, 254, 0.3) !important;
+}
+
+/* Status indicators with enhanced styling */
+.status-success {
+  display: inline-block;
+  color: #059669;
+  font-weight: 600;
+  background-color: rgba(209, 250, 229, 0.4);
+  padding: 4px 10px;
+  border-radius: 4px;
+  border-left: 3px solid #059669;
+}
+
+.status-error {
+  display: inline-block;
+  color: #dc2626;
+  font-weight: 600;
+  background-color: rgba(254, 226, 226, 0.4);
+  padding: 4px 10px;
+  border-radius: 4px;
+  border-left: 3px solid #dc2626;
+}
+
+/* No vulnerabilities message */
+.result-box p:contains("No vulnerabilities found") {
+  background-color: rgba(209, 250, 229, 0.4);
+  color: #059669;
+  font-weight: 600;
+  padding: 16px;
+  border-radius: 8px;
+  border-left: 4px solid #059669;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/* Circular loader styles */
+.loader {
+  border: 4px solid #f3f3f3; /* Light gray background */
+  border-top: 4px solid #3498db; /* Blue color for the spinning part */
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+  margin: 20px auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .main {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    padding: 16px 0;
+  }
+
+  .content {
+    padding: 24px 16px;
+  }
+
+  .scan-box div {
+    flex-direction: column;
+  }
+
+  .scan-box input {
+    width: 100%;
+    border-radius: 8px;
+    margin-bottom: 12px;
+  }
+
+  .scan-box button {
+    width: 100%;
+    border-radius: 8px;
+  }
+
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  header .actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+/* Add visual indicators for scan progress */
+.scan-progress {
+  margin-top: 16px;
+  height: 4px;
+  width: 100%;
+  background-color: #e2e8f0;
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+}
+
+.scan-progress-bar {
+  position: absolute;
+  height: 100%;
+  background: linear-gradient(90deg, #3182ce 0%, #4299e1 100%);
+  animation: progress 2s ease-in-out infinite;
+  border-radius: 2px;
+}
+
+@keyframes progress {
+  0% {
+    width: 0%;
+    left: 0;
+  }
+  50% {
+    width: 30%;
+    left: 35%;
+  }
+  100% {
+    width: 0%;
+    left: 100%;
+  }
+}
+
+/* Add visual cues for empty states */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  background-color: #f8fafc;
+  border-radius: 8px;
+  border: 1px dashed #cbd5e1;
+  text-align: center;
+}
+
+.empty-state-icon {
+  font-size: 48px;
+  color: #94a3b8;
+  margin-bottom: 16px;
+}
+
+.empty-state-text {
+  color: #64748b;
+  font-size: 1rem;
+  max-width: 400px;
+  margin: 0 auto;
+}
